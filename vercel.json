@@ -28,7 +28,7 @@
     },
     {
      "key": "Access-Control-Allow-Origin",
-     "value": "https://salaryscope.vercel.app"
+     "value": "https://salaryscope-omega.vercel.app"
     },
     {
      "key": "Content-Security-Policy",

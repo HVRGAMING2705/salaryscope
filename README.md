@@ -17,4 +17,4 @@ Predicts annual salary (in LPA) from years of experience, education level, techn
 - `index.html` — interactive demo; the browser runs the exact same weights as Python
 
 ## Live demo
-https://salaryscope.vercel.app
+https://salaryscope-omega.vercel.app
