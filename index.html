@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SalaryScope — Salary Predictor | AI/ML Project</title>
+<meta name="description" content="SalaryScope predicts annual salary (in LPA) from years of experience, education level, technical skills, internships, certifications and city tier, using a ridge regression model trained on 600 synthetic job profiles.">
+<link rel="canonical" href="https://salaryscope.vercel.app/">
+<meta property="og:title" content="SalaryScope — Salary Predictor">
+<meta property="og:description" content="Enter a job profile and instantly estimate the annual salary, with a real trained ML model running in your browser.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://salaryscope.vercel.app/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SalaryScope — Salary Predictor">
+<meta name="twitter:description" content="Ridge regression salary predictor. Try the live demo in your browser.">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"SalaryScope","applicationCategory":"BusinessApplication","description":"Salary predictor using ridge regression.","url":"https://salaryscope.vercel.app/"}</script>
+<style>
+body{font-family:Arial,Helvetica,sans-serif;color:#000;background:#fff;max-width:720px;margin:0 auto;padding:24px;line-height:1.5}
+h1{font-size:2em} label{display:block;margin:12px 0 4px;font-weight:bold}
+input{width:100%;padding:10px;font-size:16px;border:1px solid #000;border-radius:4px;box-sizing:border-box}
+button{margin-top:20px;padding:12px 24px;font-size:17px;background:#000;color:#fff;border:none;border-radius:4px;cursor:pointer}
+#result{margin-top:24px;padding:20px;border:2px solid #000;border-radius:8px;display:none}
+#result b{font-size:2em}
+.note{color:#333;font-size:.95em} code{background:#f2f2f2;padding:2px 5px}
+</style>
+</head>
+<body>
+<h1>&#128176; SalaryScope — Salary Predictor</h1>
+<p class="note">A 2nd-year B.Tech AI/ML project by Vikranth Reddy. A ridge regression model trained on 600 synthetic job profiles predicts annual salary (LPA) from experience, education, skills, internships, certifications and city tier. 5-fold CV: <b>R&sup2; = 0.938</b>, MAE = 1.22 LPA vs a 5.13 LPA mean-guess baseline.</p>
+<label>Years of experience</label><input id="exp" type="number" value="5" min="0" max="20">
+<label>Education level (1 = diploma, 2 = bachelor&apos;s, 3 = master&apos;s, 4 = PhD)</label><input id="edu" type="number" value="2" min="1" max="4">
+<label>Technical skills (count, 0–15)</label><input id="skills" type="number" value="8" min="0" max="15">
+<label>Internships completed (0–5)</label><input id="intern" type="number" value="2" min="0" max="5">
+<label>Certifications (count, 0–10)</label><input id="certs" type="number" value="3" min="0" max="10">
+<label>City tier (1 = tier-2 city, 2 = tier-1 city, 3 = metro)</label><input id="city" type="number" value="2" min="1" max="3">
+<button onclick="predict()">Estimate Salary</button>
+<div id="result"></div>
+<p class="note">How it works: each input is standardised with the training means and standard deviations, then multiplied by the model&apos;s learned coefficients. The exact same weights run in this page and in the Python training script (<code>train.py</code>), so the browser result matches the trained model to within 0.01 LPA.</p>
+<p class="note">Try a sample: 2 years experience, bachelor&apos;s degree, 5 skills, 1 internship, 2 certifications, tier-1 city &rarr; about 12.81 LPA. A senior profile — 15 years, PhD, 14 skills, 5 internships, 8 certifications, metro — &rarr; about 36.17 LPA.</p>
+<p><a href="https://github.com/HVRGAMING2705/salaryscope">View source on GitHub</a></p>
+<script>
+const MEANS = [9.919731033977596, 2.5016666666666665, 7.395, 2.515, 4.98, 1.9733333333333334];
+const STDS = [5.7397454514270585, 1.1210102090921814, 4.615081256056064, 1.7213681574065824, 3.1468926472527308, 0.8037136029429628];
+const COEF = [5.09522139393497, 1.2960673545982966, 1.6173026452796406, 1.2957052460960363, 1.2399359041742435, 0.7855140960806973];
+const INTERCEPT = 23.550311853952252;
+function predict(){
+  const ids = ["exp","edu","skills","intern","certs","city"];
+  const v = ids.map(id => parseFloat(document.getElementById(id).value));
+  let y = INTERCEPT;
+  for (let j = 0; j < 6; j++) y += ((v[j]-MEANS[j])/STDS[j]) * COEF[j];
+  y = Math.max(2.5, Math.min(40, y));
+  const el = document.getElementById("result");
+  el.style.display = "block";
+  el.innerHTML = "<b>" + y.toFixed(2) + " LPA</b><br>Estimated annual salary (about &#8377;" + (y*100000).toLocaleString("en-IN") + " per year). This is a classroom estimate from synthetic training data, not a job offer.";
+}
+</script>
+</body>
+</html>
